@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",  // 로컬 개발
                         "https://help-home.vercel.app",  // 프로덕션
-                        "https://help-home-25f6ltxs1-rowooncodings-projects.vercel.app",  // 현재 배포
+                        "https://helphome-front.vercel.app",
                         "https://*.vercel.app"  // 프리뷰 URL
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
