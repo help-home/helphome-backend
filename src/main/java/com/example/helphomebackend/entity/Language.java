@@ -15,6 +15,9 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String category;
+
     @Column(nullable = false, length = 50)
     private String koName;
 
