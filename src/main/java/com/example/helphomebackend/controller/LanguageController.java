@@ -22,14 +22,9 @@ public class LanguageController {
 
     // 언어 저장
     @PostMapping
-    public ResponseEntity<?> createLanguage(@Valid @RequestBody Language language) {
-        try {
-            Language savedLanguage = languageService.saveLanguage(language);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedLanguage);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-
+    public ResponseEntity<Language> createLanguage(@Valid @RequestBody Language language) {
+        Language savedLanguage = languageService.saveLanguage(language);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedLanguage);
     }
 
     // 언어 목록 조회

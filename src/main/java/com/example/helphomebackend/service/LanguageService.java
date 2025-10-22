@@ -2,12 +2,12 @@ package com.example.helphomebackend.service;
 
 import com.example.helphomebackend.entity.Language;
 import com.example.helphomebackend.enums.LanguageCategory;
+import com.example.helphomebackend.exception.DuplicateResourceException;
+import com.example.helphomebackend.exception.InvalidCategoryException;
 import com.example.helphomebackend.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
-
 @Service
 public class LanguageService {
 
@@ -45,7 +45,7 @@ public class LanguageService {
         boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedFalse(language.getCategory(), language.getKoName());
 
         if (exists) {
-            throw new IllegalArgumentException(
+            throw new DuplicateResourceException(
                     String.format("이미 존재하는 언어입니다. (카테고리: %s, 이름: %s)\n",
                             language.getCategory(), language.getKoName()
                             )
@@ -57,7 +57,7 @@ public class LanguageService {
     private void validateBusinessRules(Language language) {
         // 카테고리 유효성 검사
         if (!LanguageCategory.isValid(language.getCategory())) {
-            throw new IllegalArgumentException("유효하지 않은 카테고리입니다: " + language.getCategory());
+            throw new InvalidCategoryException(language.getCategory());
         }
 
         // 언어명이 서로 다른지 검사
