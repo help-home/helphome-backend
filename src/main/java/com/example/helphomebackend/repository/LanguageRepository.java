@@ -9,11 +9,11 @@ import java.util.List;
 @Repository
 public interface LanguageRepository extends JpaRepository<Language, Long> {
     // 중복 검사
-    boolean existsByCategoryAndKoNameAndDeletedFalse(String category, String koName);
+    boolean existsByCategoryAndKoNameAndDeletedYnFalse(String category, String koName);
 
     // 논리 삭제된 것 제외한 조회
-    List<Language> findByDeletedFalse();
+    List<Language> findByDeletedYnFalse();
 
     // 카테고리 별 조회
-    List<Language> findByCategoryAndDeletedFalse(String category);
+    List<Language> findByCategoryAndDeletedYnFalse(String category);
 }

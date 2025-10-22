@@ -37,12 +37,12 @@ public class LanguageService {
 
     // 삭제된 다국어 제외한 조회
     public List<Language> getLanguages() {
-        return languageRepository.findByDeletedFalse();
+        return languageRepository.findByDeletedYnFalse();
     }
 
     // 동일한 카테고리 내에서 한국어 이름 중복 검사
     private void checkDuplicate(Language language) {
-        boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedFalse(language.getCategory(), language.getKoName());
+        boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedYnFalse(language.getCategory(), language.getKoName());
 
         if (exists) {
             throw new DuplicateResourceException(
@@ -58,13 +58,6 @@ public class LanguageService {
         // 카테고리 유효성 검사
         if (!LanguageCategory.isValid(language.getCategory())) {
             throw new InvalidCategoryException(language.getCategory());
-        }
-
-        // 언어명이 서로 다른지 검사
-        if (language.getKoName().equalsIgnoreCase(language.getEnName()) ||
-                language.getKoName().equalsIgnoreCase(language.getChName()) ||
-                language.getEnName().equalsIgnoreCase(language.getChName())) {
-            throw new IllegalArgumentException("각 언어별 이름은 서로 달라야 합니다.");
         }
 
         // 특수문자나 숫자 제한

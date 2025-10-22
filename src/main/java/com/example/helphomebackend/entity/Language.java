@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,12 +25,10 @@ public class Language {
     @Column(nullable = false, length = 50)
     private String koName;
 
-    @NotBlank(message = "영어 이름은 필수입니다.")
     @Size(max = 50, message = "영어 이름은 50자를 초과할 수 없습니다.")
     @Column(length = 50)
     private String enName;
 
-    @NotBlank(message = "중국어 이름은 필수입니다.")
     @Size(max = 50, message = "중국어 이름은 50자를 초과할 수 없습니다.")
     @Column(length = 50)
     private String chName;
@@ -48,8 +45,8 @@ public class Language {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted = false;
+    @Column(name = "deleted_yn")
+    private boolean deletedYn = false;
 
     @PrePersist
     protected void onCreated() {
@@ -64,7 +61,7 @@ public class Language {
 
     // 논리 삭제
     public void delete() {
-        this.isDeleted = true;
+        this.deletedYn = true;
         this.deletedAt = LocalDateTime.now();
     }
 }
