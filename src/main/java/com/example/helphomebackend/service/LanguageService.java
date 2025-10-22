@@ -18,11 +18,14 @@ public class LanguageService {
     }
 
     public Language saveLanguage(Language language) {
-        // 비즈니스 규칙 검증(카테고리 등)
+        // 비즈니스 규칙 검증(카테고리 유효성 검사, 언어명 유효성 검사)
         validateBusinessRules(language);
 
         // 동일한 카테고리 내에서 한국어 이름 중복검사
         checkDuplicate(language);
+
+        // 데이터 정규화
+        normalizeData(language);
 
         return languageRepository.save(language);
     }
@@ -57,9 +60,34 @@ public class LanguageService {
             throw new IllegalArgumentException("유효하지 않은 카테고리입니다: " + language.getCategory());
         }
 
-        // 언어명 형식 검사 (예: 특수문자 제한)
-        if (!language.getKoName().matches("^[가-힣a-zA-Z0-9\\s\\-\\+#\\.]*$")) {
-            throw new IllegalArgumentException("언어 이름에 허용되지 않은 문자가 포함되어 있습니다.");
+        // 언어명이 서로 다른지 검사
+        if (language.getKoName().equalsIgnoreCase(language.getEnName()) ||
+                language.getKoName().equalsIgnoreCase(language.getChName()) ||
+                language.getEnName().equalsIgnoreCase(language.getChName())) {
+            throw new IllegalArgumentException("각 언어별 이름은 서로 달라야 합니다.");
         }
+
+        // 특수문자나 숫자 제한
+        validateNameFormat(language.getKoName(), "한국어");
+        validateNameFormat(language.getEnName(), "영어");
+        validateNameFormat(language.getChName(), "중국어");
+    }
+
+    // 포멧검사
+    private void validateNameFormat(String name, String language) {
+        if (name.matches(".*\\\\d.*")) {
+            throw new IllegalArgumentException(language + "이름에 허용되지 않는 문자가 포함되어 있습니다.");
+        }
+    }
+
+    // 이름 정규화
+    private void normalizeData(Language language) {
+        // 카테고리 소문자 통일
+        language.setCategory(language.getCategory().toLowerCase().trim());
+
+        // 이름 앞뒤 공백 제거
+        language.setKoName(language.getKoName().trim());
+        language.setEnName(language.getEnName().trim());
+        language.setChName(language.getChName().trim());
     }
 }
