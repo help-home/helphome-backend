@@ -1,6 +1,7 @@
 package com.example.helphomebackend.service;
 
 import com.example.helphomebackend.entity.Language;
+import com.example.helphomebackend.enums.LanguageCategory;
 import com.example.helphomebackend.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,17 @@ public class LanguageService {
 
     private final LanguageRepository languageRepository;
 
-    public LanguageService(LanguageRepository laguageRepository) {
-        this.languageRepository = laguageRepository;
+    public LanguageService(LanguageRepository languageRepository) {
+        this.languageRepository = languageRepository;
     }
 
     public Language saveLanguage(Language language) {
+        // 비즈니스 규칙 검증(카테고리 등)
+        validateBusinessRules(language);
+
         // 동일한 카테고리 내에서 한국어 이름 중복검사
+        checkDuplicate(language);
+
         return languageRepository.save(language);
     }
 
@@ -44,11 +50,10 @@ public class LanguageService {
         }
     }
 
-    // 유효성 검사
+    // 비즈니스 규칙 검사
     private void validateBusinessRules(Language language) {
         // 카테고리 유효성 검사
-        Set<String> validateCategories = Set.of("common", "success", "error");
-        if (!validateCategories.contains(language.getCategory().toLowerCase())) {
+        if (!LanguageCategory.isValid(language.getCategory())) {
             throw new IllegalArgumentException("유효하지 않은 카테고리입니다: " + language.getCategory());
         }
 
