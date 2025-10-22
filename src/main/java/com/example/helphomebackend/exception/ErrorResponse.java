@@ -18,7 +18,7 @@ public class ErrorResponse {
     private String message;
     private String path;
     private LocalDateTime timestamp;
-    private List<ValidationError> validationError;
+    private List<ValidationError> validationErrors;
 
     @Data
     @Builder

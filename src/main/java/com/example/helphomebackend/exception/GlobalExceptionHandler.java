@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,8 +86,8 @@ public class GlobalExceptionHandler {
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("입력값 검증에 실패했습니다")
                 .path(request.getRequestURI())
-                .timestamp(java.time.LocalDateTime.now())
-                .validationError(validationErrors)
+                .timestamp(LocalDateTime.now())
+                .validationErrors(validationErrors)
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
