@@ -1,6 +1,8 @@
 package com.example.helphomebackend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,15 +17,22 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "카테고리는 필수입니다.")
     @Column(nullable = false)
     private String category;
 
+    @NotBlank(message = "한국어 이름은 필수입니다.")
+    @Size(max = 50, message = "한국어 이름은 50자를 초과할 수 없습니다.")
     @Column(nullable = false, length = 50)
     private String koName;
 
+    @NotBlank(message = "영어 이름은 필수입니다.")
+    @Size(max = 50, message = "영어 이름은 50자를 초과할 수 없습니다.")
     @Column(length = 50)
     private String enName;
 
+    @NotBlank(message = "중국어 이름은 필수입니다.")
+    @Size(max = 50, message = "중국어 이름은 50자를 초과할 수 없습니다.")
     @Column(length = 50)
     private String chName;
 
