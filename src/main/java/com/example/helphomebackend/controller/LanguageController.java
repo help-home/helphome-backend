@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/languages")
@@ -21,9 +22,14 @@ public class LanguageController {
 
     // 언어 저장
     @PostMapping
-    public ResponseEntity<Language> createLanguage(@Valid @RequestBody Language language) {
-        Language savedLanguage = languageService.saveLanguage(language);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedLanguage);
+    public ResponseEntity<?> createLanguage(@Valid @RequestBody Language language) {
+        try {
+            Language savedLanguage = languageService.saveLanguage(language);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedLanguage);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
     }
 
     // 언어 목록 조회
