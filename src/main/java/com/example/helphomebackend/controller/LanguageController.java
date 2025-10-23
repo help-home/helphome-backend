@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/languages")
@@ -27,10 +26,27 @@ public class LanguageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLanguage);
     }
 
-    // 언어 목록 조회
+    // 언어 목록 조회 (삭제된 것 포함)
     @GetMapping
     public ResponseEntity<List<Language>> getLanguages() {
         List<Language> languages = languageService.getAllLanguages();
+        return ResponseEntity.ok(languages);
+    }
+
+    // 활성 언어만 조회 (삭제된 것 제외)
+    @GetMapping("/active")
+    public ResponseEntity<List<Language>> getActiveLanguages() {
+        List<Language> languages = languageService.getLanguages();
+        return ResponseEntity.ok(languages);
+    }
+
+    // 동적 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<Language>> searchLanguages(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String keyword) {
+
+        List<Language> languages = languageService.searchLanguages(category, keyword);
         return ResponseEntity.ok(languages);
     }
 }

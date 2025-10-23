@@ -33,9 +33,6 @@ public class Language {
     @Column(length = 50)
     private String chName;
 
-    @Column(name = "is_active")
-    private boolean isActive = true;
-
     @Column(name = "created_At", updatable = false)
     private LocalDateTime createdAt;
 

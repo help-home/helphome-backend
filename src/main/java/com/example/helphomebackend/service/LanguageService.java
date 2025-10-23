@@ -4,6 +4,7 @@ import com.example.helphomebackend.entity.Language;
 import com.example.helphomebackend.enums.LanguageCategory;
 import com.example.helphomebackend.exception.DuplicateResourceException;
 import com.example.helphomebackend.exception.InvalidCategoryException;
+import com.example.helphomebackend.repository.LanguageQueryRepository;
 import com.example.helphomebackend.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,11 @@ import java.util.List;
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
+    private final LanguageQueryRepository languageQueryRepository;
 
-    public LanguageService(LanguageRepository languageRepository) {
+    public LanguageService(LanguageRepository languageRepository, LanguageQueryRepository languageQueryRepository) {
         this.languageRepository = languageRepository;
+        this.languageQueryRepository = languageQueryRepository;
     }
 
     public Language saveLanguage(Language language) {
@@ -40,9 +43,20 @@ public class LanguageService {
         return languageRepository.findByDeletedYnFalse();
     }
 
+    // 동적 검색 기능
+    public List<Language> searchLanguages(String category, String keyword) {
+        return languageQueryRepository.searchLanguages(category, keyword);
+    }
+
     // 동일한 카테고리 내에서 한국어 이름 중복 검사
     private void checkDuplicate(Language language) {
-        boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedYnFalse(language.getCategory(), language.getKoName());
+        // boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedYnFalse(language.getCategory(), language.getKoName()); -> 쿼리 dsl로 수정
+
+        boolean exists = languageQueryRepository.existsLanguage(
+                language.getCategory(),
+                language.getKoName(),
+                language.getId()
+        );
 
         if (exists) {
             throw new DuplicateResourceException(
