@@ -6,9 +6,12 @@ import com.example.helphomebackend.exception.DuplicateResourceException;
 import com.example.helphomebackend.exception.InvalidCategoryException;
 import com.example.helphomebackend.repository.LanguageQueryRepository;
 import com.example.helphomebackend.repository.LanguageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class LanguageService {
 
@@ -48,10 +51,54 @@ public class LanguageService {
         return languageQueryRepository.searchLanguages(category, keyword);
     }
 
+    // 수정
+    public Language updateLanguage(Long id, Language updateLanguage) {
+        // 기존 언어 조회
+        Language existingLanguage = languageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 언어를 찾을 수 없습니다. ID: " + id));
+
+        // 수정이 불가능한 필드 보존
+        updateLanguage.setId(existingLanguage.getId());
+        updateLanguage.setCreatedAt(existingLanguage.getCreatedAt());
+        updateLanguage.setDeletedYn(existingLanguage.isDeletedYn());
+
+        // 전체 업데이트 시 모든 필드 검증
+        validateBusinessRules(updateLanguage);
+
+        // 선택적 필드 업데이트 로직
+        if (updateLanguage.getCategory() != null) {
+            existingLanguage.setCategory(updateLanguage.getCategory().toLowerCase().trim());
+        }
+
+        // 한국어 이름 업데이트
+        Optional.ofNullable(updateLanguage.getKoName())
+                .ifPresent(name -> {
+                    validateNameFormat(name, "한국어");
+                    existingLanguage.setKoName(name.trim());
+                });
+
+        // 영어 이름 업데이트
+        Optional.ofNullable(updateLanguage.getEnName())
+                .ifPresent(name -> {
+                    validateNameFormat(name, "영어");
+                    existingLanguage.setEnName(name.trim());
+                });
+
+        // 중국어 이름 업데이트
+        Optional.ofNullable(updateLanguage.getChName())
+                .ifPresent(name -> {
+                    validateNameFormat(name, "중국어");
+                    existingLanguage.setChName(name.trim());
+                });
+
+        // 중복검사
+        checkDuplicate(existingLanguage);
+
+        return languageRepository.save(existingLanguage);
+    }
+
     // 동일한 카테고리 내에서 한국어 이름 중복 검사
     private void checkDuplicate(Language language) {
-        // boolean exists = languageRepository.existsByCategoryAndKoNameAndDeletedYnFalse(language.getCategory(), language.getKoName()); -> 쿼리 dsl로 수정
-
         boolean exists = languageQueryRepository.existsLanguage(
                 language.getCategory(),
                 language.getKoName(),
@@ -82,6 +129,11 @@ public class LanguageService {
 
     // 포멧검사
     private void validateNameFormat(String name, String language) {
+        // 이름이 공백인 경우 검사 제외
+        if (name == null || name.trim().isEmpty()) {
+            return;
+        }
+
         if (name.matches(".*\\\\d.*")) {
             throw new IllegalArgumentException(language + "이름에 허용되지 않는 문자가 포함되어 있습니다.");
         }

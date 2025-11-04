@@ -49,4 +49,11 @@ public class LanguageController {
         List<Language> languages = languageService.searchLanguages(category, keyword);
         return ResponseEntity.ok(languages);
     }
+
+    // 언어 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<Language> updateLanguage(@PathVariable Long id, @Valid @RequestBody Language updateLanguage) {
+        Language updatedLanguage = languageService.updateLanguage(id, updateLanguage);
+        return ResponseEntity.ok(updatedLanguage);
+    }
 }
