@@ -56,4 +56,11 @@ public class LanguageController {
         Language updatedLanguage = languageService.updateLanguage(id, updateLanguage);
         return ResponseEntity.ok(updatedLanguage);
     }
+
+    // 언어 논리 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
+        languageService.deleteLanguage(id);
+        return ResponseEntity.noContent().build();
+    }
 }

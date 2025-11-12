@@ -97,6 +97,23 @@ public class LanguageService {
         return languageRepository.save(existingLanguage);
     }
 
+    // TODO: 삭제로직 추가
+    // 논리삭제
+    public void deleteLanguage(Long id) {
+        Language language = languageRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("삭제하시려는 언어를 찾을 수 없습니다." + id));
+
+        // 이미 삭제 된 언어일 경우
+        if (language.isDeletedYn()) {
+            throw new IllegalStateException("이미 삭제된 언어 입니다. ID:" + id);
+        }
+
+        // 논리삭제 메서드 호출
+        language.delete();
+
+        // 저장
+        languageRepository.save(language);
+    }
+
     // 동일한 카테고리 내에서 한국어 이름 중복 검사
     private void checkDuplicate(Language language) {
         boolean exists = languageQueryRepository.existsLanguage(
